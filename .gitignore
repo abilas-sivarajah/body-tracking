@@ -1,0 +1,20 @@
+# Persönliche Daten, dürfen nie ins Repo
+private/
+
+# Geheimnisse
+.env
+.env.*
+*service-account*.json
+serviceAccount*.json
+
+# Abhängigkeiten und lokale Werkzeuge
+node_modules/
+.vercel/
+.firebase/
+*-debug.log
+firebase-debug.*
+firestore-debug.*
+ui-debug.*
+
+# Separater Klon des Repos im Projektordner
+/body-tracking/

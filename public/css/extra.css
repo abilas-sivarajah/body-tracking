@@ -1,0 +1,59 @@
+/* Ergänzungen für Login, Plan-Editor, Rangliste und Konto. Gleiche Farben und Formen wie app.css. */
+[hidden]{display:none!important}
+select,.pfield input,.pnew input{font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:10px;min-height:46px;padding:0 10px;min-width:0;max-width:100%}
+.pfield input,.pfield select,.pplan>select,.pnew input,.ptools select,.pin2 input,.pgrams input{box-sizing:border-box}
+.pfield{min-width:0;display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);margin:10px 0 0}
+.pfield input,.pfield select{width:100%;font-size:16px}
+.ph{font-family:var(--cond);font-weight:600;font-size:18px;margin:18px 0 6px}
+.credit{font-size:13.5px;color:var(--muted);margin:8px 0 0}
+.credit a{color:inherit}
+
+/* Anmeldung */
+.authcard{margin-top:24px}
+.authcard form{margin-top:6px}
+.authcard .btn{width:100%}
+.authlinks{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin:14px 0 0}
+
+/* Pläne */
+#planEditor{margin-top:10px}
+.pdays{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0 8px}
+.pplan{border-top:1px solid var(--line);margin-top:4px}
+.pplan:last-of-type{border-bottom:1px solid var(--line)}
+.pplan>summary{display:flex;justify-content:space-between;gap:10px;padding:12px 2px;cursor:pointer;font-weight:600;font-size:15.5px}
+.pplan>summary .fm{color:var(--muted);font-weight:500;font-size:14px;white-space:nowrap}
+.pplan[open]{padding-bottom:12px}
+.pplan>select{width:100%;margin-top:8px}
+.plist{list-style:none;margin:8px 0 0;padding:0}
+.plist li{display:grid;grid-template-columns:minmax(0,1fr) 36px 36px 36px;gap:4px;align-items:center;padding:3px 0;font-size:15px}
+.plist ul li,ul.plist li{grid-template-columns:minmax(0,1fr) 36px}
+.pname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pbtn{height:36px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}
+.pdel{display:inline-block;margin-top:10px}
+.pform{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 8px}
+.pform .pfield:first-child{grid-column:1/-1}
+.pcheck{display:flex;gap:8px;align-items:flex-start;margin:10px 0 0;font-size:15px}
+.pcheck input{width:20px;height:20px;flex:none;margin:1px 0 0}
+.pnew{margin-top:12px}
+.pnew input{flex:1 1 140px;text-align:left;font-size:16px;width:auto}
+
+/* Vorschau beim Berechnen */
+.flist li.prow{grid-template-columns:minmax(0,1fr) auto auto}
+.pin2{display:flex;gap:4px}
+.pin2 input{width:58px;height:40px;border:1px solid var(--line);border-radius:8px;background:var(--field);text-align:center;font-size:15px}
+.ptools{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ptools select{flex:1 1 170px;min-height:38px;font-size:14px}
+.ptools:empty{display:none}
+.pgrams{display:inline-flex;align-items:center;gap:4px;font-size:14px;color:var(--muted)}
+.pgrams input{width:64px;height:38px;border:1px solid var(--line);border-radius:8px;background:var(--field);text-align:center;font-size:15px}
+#ownList:empty{display:none}
+.owngrid{grid-template-columns:minmax(0,1fr) 72px 72px}
+.owngrid label:nth-child(4){grid-column:1}
+
+/* Rangliste */
+.board{list-style:none;margin:0;padding:0}
+.board li{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line);font-size:15.5px}
+.board li.empty{display:block;color:var(--muted);border:0}
+.board li.me{font-weight:600}
+.board .brank{color:var(--muted)}
+.board .bname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board .k{font-family:var(--cond);font-weight:600;font-size:18px;white-space:nowrap}

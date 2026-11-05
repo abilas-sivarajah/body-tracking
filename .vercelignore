@@ -1,0 +1,8 @@
+private/
+tests/
+scripts/
+.github/
+.env
+.env.*
+*service-account*.json
+serviceAccount*.json

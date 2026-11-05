@@ -1,0 +1,23 @@
+{
+  "name": "body-tracking",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test \"tests/unit/*.test.mjs\"",
+    "test:emulator": "firebase emulators:exec --only firestore,auth --project demo-body-tracking \"node --test --test-concurrency=1 tests/emulator/*.test.mjs\"",
+    "build:bls": "node scripts/build-bls.mjs",
+    "check:private": "node scripts/check-no-private-data.mjs",
+    "dev": "firebase emulators:exec --only firestore,auth --project demo-body-tracking \"node scripts/dev-server.mjs\""
+  },
+  "dependencies": {
+    "firebase-admin": "^14.5.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^6.0.0",
+    "fflate": "^0.8.2",
+    "firebase": "^13.2.0",
+    "firebase-tools": "^15.0.0"
+  }
+}

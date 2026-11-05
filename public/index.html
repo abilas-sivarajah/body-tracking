@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/css/app.css">
+<link rel="stylesheet" href="/css/extra.css">
+</head>
+<body>
+<header class="top">
+  <nav class="tabs" aria-label="Bereiche">
+    <a href="#training" data-view="training">Training</a>
+    <a href="#essen" data-view="essen">Essen</a>
+    <a href="#wasser" data-view="wasser">Körper<span class="tabdot" id="tabDot" hidden></span></a>
+    <a href="#verlauf" data-view="verlauf">Verlauf</a>
+  </nav>
+</header>
+
+<main>
+  <section id="authView" hidden data-mode="login">
+    <div class="headcard authcard">
+      <h1 class="hc-title">Training</h1>
+      <form id="authForm">
+        <label class="pfield" data-only="register" hidden><span>Einladungscode</span><input id="authCode" autocomplete="off" autocapitalize="characters"></label>
+        <label class="pfield" data-only="register" hidden><span>Name (für die Rangliste)</span><input id="authName" maxlength="30" autocomplete="nickname"></label>
+        <label class="pfield"><span>E-Mail</span><input id="authEmail" type="email" required autocomplete="email"></label>
+        <label class="pfield" data-only="login register"><span>Passwort</span><input id="authPw" type="password" minlength="6" autocomplete="current-password"></label>
+        <div class="actions"><button class="btn primary" id="authSubmit">Anmelden</button></div>
+      </form>
+      <p class="fstatus" id="authMsg" role="status" aria-live="polite"></p>
+      <p class="authlinks">
+        <button type="button" class="linkbtn" data-go="register" data-only="login reset">Mit Einladung registrieren</button>
+        <button type="button" class="linkbtn" data-go="login" data-only="register reset" hidden>Zur Anmeldung</button>
+        <button type="button" class="linkbtn" data-go="reset" data-only="login">Passwort vergessen</button>
+      </p>
+    </div>
+  </section>
+
+  <section class="view" data-name="training">
+    <div class="headcard">
+      <div class="hc-top">
+        <div>
+          <p class="hc-date" id="dayDate"></p>
+          <h1 class="hc-title" id="dayTitle">Training</h1>
+          <p class="hc-sub" id="daySub"></p>
+          <p class="hc-score" id="dayScore"></p>
+        </div>
+        <div class="ring" role="img" aria-label="Fortschritt heute">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><circle class="ring-bg" cx="32" cy="32" r="26"/><circle class="ring-fg" id="ringFg" cx="32" cy="32" r="26"/></svg>
+          <div class="ring-t"><b id="cDone">0</b><span id="cAll">/0</span></div>
+        </div>
+      </div>
+      <div class="segbar" id="segbar" aria-hidden="true"></div>
+      <p class="legend"><span><i class="g"></i>Zu leicht</span><span><i class="b"></i>Passt</span><span><i class="r"></i>Am Limit</span><span><i class="n"></i>Ohne Bewertung</span></p>
+      <div class="hc-stats">
+        <a href="#essen" class="st k"><span class="sl">Kalorien</span><b id="stK">0</b><i class="bar"><i id="stKb"></i></i></a>
+        <a href="#essen" class="st p"><span class="sl">Eiweiß</span><b id="stP">0 g</b><i class="bar"><i id="stPb"></i></i></a>
+        <a href="#wasser" class="st w"><span class="sl">Wasser</span><b id="stW">0,0 l</b><i class="bar"><i id="stWb"></i></i></a>
+      </div>
+    </div>
+    <p class="banner" id="banner" hidden></p>
+    <button type="button" class="showex" id="showEx" hidden>Übungen anzeigen</button>
+    <div id="exWrap">
+    <ol class="list" id="exlist"></ol>
+    <div class="tnote">
+      <label class="lbl" for="noteText">Notiz</label>
+      <textarea id="noteText" rows="2" maxlength="300"></textarea>
+      <div class="actions"><button type="button" class="btn ghost" id="noteSave">Notiz speichern</button></div>
+    </div>
+    </div>
+    <details class="fold daysfold">
+      <summary><span class="ft">Trainingstage</span><span class="fm" id="tdMeta"></span></summary>
+      <div class="fold-in"><div class="tdays" id="tDays" role="group" aria-label="Trainingstage"></div><div id="planEditor"></div></div>
+    </details>
+  </section>
+
+  <section class="view" data-name="verlauf" hidden>
+    <details class="cardf" open>
+      <summary><span class="ft">Wochenübersicht</span><span class="fm" id="wkMeta"></span></summary>
+      <div class="cin">
+      <div class="wk3">
+        <div class="st"><span class="sl">Ø Kalorien</span><b id="wkK">–</b><i class="bar"><i id="wkKb"></i></i></div>
+        <div class="st p"><span class="sl">Ø Eiweiß</span><b id="wkP">–</b><i class="bar"><i id="wkPb"></i></i></div>
+        <div class="st s"><span class="sl">Ø Schlaf</span><b id="wkS">–</b><i class="bar"><i id="wkSb"></i></i></div>
+      </div>
+      <p class="chl" id="wkLine"></p>
+      <div class="chart"><div class="goal" id="wkGoal"></div><div class="bars" id="wkChart"></div></div>
+      </div>
+    </details>
+    <details class="cardf">
+      <summary><span class="ft">Letzte 7 Tage</span><span class="fm" id="tageMeta"></span></summary>
+      <div class="cin">
+      <ul class="days2" id="daysList"></ul>
+      </div>
+    </details>
+    <details class="cardf">
+      <summary><span class="ft">Körpergewicht</span><span class="fm" id="bwMeta"></span></summary>
+      <div class="cin">
+      <p class="bwprog" id="bwProg"></p>
+      <ul class="week" id="bwList"></ul>
+      </div>
+    </details>
+    <div id="history"></div>
+    <details class="cardf" id="boardFold">
+      <summary><span class="ft">Rangliste</span><span class="fm" id="boardMeta"></span></summary>
+      <div class="cin">
+        <label class="pcheck"><input type="checkbox" id="boardOpt"><span>Ich mache mit. Andere sehen meinen Namen und meine Wochenwerte.</span></label>
+        <h4 class="ph">Trainingsvolumen</h4>
+        <ol class="board" id="boardTraining"></ol>
+        <h4 class="ph">Wasser</h4>
+        <ol class="board" id="boardWater"></ol>
+        <p class="credit">Die Werte stammen aus den eigenen Einträgen und werden pro Woche berechnet.</p>
+      </div>
+    </details>
+    <details class="cardf">
+      <summary><span class="ft">Meine Ziele</span><span class="fm" id="goalMeta"></span></summary>
+      <div class="cin">
+        <div class="pform">
+          <label class="pfield"><span>Kalorien pro Tag</span><input id="gKcal" inputmode="numeric"></label>
+          <label class="pfield"><span>Eiweiß pro Tag (g)</span><input id="gProt" inputmode="numeric"></label>
+          <label class="pfield"><span>Wasser pro Tag (ml)</span><input id="gWater" inputmode="numeric"></label>
+        </div>
+        <div class="actions"><button type="button" class="btn ghost" id="goalSave">Ziele speichern</button></div>
+      </div>
+    </details>
+    <details class="cardf">
+      <summary><span class="ft">Konto</span></summary>
+      <div class="cin">
+        <div class="wcustom pnew"><label class="sr" for="accName">Name</label><input id="accName" maxlength="30" autocomplete="nickname"><button type="button" class="btn ghost" id="nameSave">Name speichern</button></div>
+        <div class="actions">
+          <button type="button" class="btn ghost" id="logoutBtn">Abmelden</button>
+          <button type="button" class="btn ghost" id="exportBtn">Daten exportieren</button>
+        </div>
+        <h4 class="ph">Konto löschen</h4>
+        <p class="credit">Löscht dein Konto und alle Einträge endgültig. Exportiere vorher, was du behalten willst.</p>
+        <div class="wcustom pnew"><label class="sr" for="delPw">Passwort</label><input id="delPw" type="password" placeholder="Passwort" autocomplete="current-password"><button type="button" class="btn ghost" id="delBtn">Endgültig löschen</button></div>
+        <h4 class="ph">Datenschutz und Quellen</h4>
+        <p class="credit">Deine Einträge liegen in Google Firebase und sind nur für dich sichtbar. Für andere sichtbar sind nur Name und Wochenwerte, wenn du bei der Rangliste mitmachst. Barcodes werden zur Produktsuche an Open Food Facts geschickt.</p>
+        <p class="credit">Nährwerte: Max Rubner-Institut (2025), Bundeslebensmittelschlüssel (BLS), Version 4.0, Karlsruhe, <a href="https://doi.org/10.25826/Data20251217-134202-0" rel="noopener">DOI: 10.25826/Data20251217-134202-0</a>, Lizenz <a href="https://creativecommons.org/licenses/by/4.0/deed.de" rel="noopener">CC BY 4.0</a>, Daten verdichtet. Produkte: <a href="https://world.openfoodfacts.org" rel="noopener">Open Food Facts</a>, Lizenz ODbL. Berechnete Werte sind Schätzungen.</p>
+      </div>
+    </details>
+  </section>
+
+  <section class="view" data-name="essen" hidden>
+    <div class="meters">
+      <div>
+        <div class="mrow"><span class="ml">Kalorien</span><b id="mKcal">0</b><span class="of" id="kcalOf"></span></div>
+        <div class="track" id="tKcal"><i></i></div>
+      </div>
+      <div>
+        <div class="mrow"><span class="ml">Eiweiß</span><b id="mProt">0 g</b><span class="of" id="protOf"></span></div>
+        <div class="track prot" id="tProt"><i></i></div>
+      </div>
+    </div>
+
+    <label class="lbl" for="foodText">Anderes eintragen</label>
+    <textarea id="foodText" rows="2" placeholder="z. B. 2 Fladenbrot mit Pesto und 4 Scheiben Salami"></textarea>
+    <div class="actions" id="calcWrap">
+      <button type="button" class="btn primary" id="foodCalc">Berechnen</button>
+      <button type="button" class="btn ghost" id="photoBtn">Barcode</button>
+      <input type="file" id="foodPhoto" accept="image/*" capture="environment" hidden>
+    </div>
+    <div class="wcustom" id="bcBox" hidden><label class="sr" for="bcIn">Barcode</label><input id="bcIn" inputmode="numeric" placeholder="Barcode" autocomplete="off"><button type="button" class="btn ghost" id="bcGo">Suchen</button></div>
+    <p class="fstatus" id="foodStatus" role="status" aria-live="polite"></p>
+
+    <div class="preview" id="preview" hidden>
+      <ul class="flist" id="previewList"></ul>
+      <div class="ptotal"><span>Zusammen</span><span id="previewTotal"></span></div>
+      <div class="actions">
+        <button type="button" class="btn primary" id="previewAdd">Hinzufügen</button>
+        <button type="button" class="btn ghost" id="previewDrop">Verwerfen</button>
+      </div>
+    </div>
+
+    <div class="folds">
+      <details class="fold cardf">
+        <summary><span class="ft">Heute gegessen</span><span class="fm" id="todayMeta"></span></summary>
+        <div class="fold-in" id="foodToday"></div>
+      </details>
+      <details class="fold cardf">
+        <summary><span class="ft">Meine Lebensmittel</span><span class="fm" id="ownMeta"></span></summary>
+        <div class="fold-in">
+          <p class="credit">Werte pro Portion. Sie gehen beim Berechnen vor. Mit Gramm lassen sie sich auch umrechnen.</p>
+          <ul class="flist" id="ownList"></ul>
+          <div class="mgrid owngrid">
+            <label>Name<input id="ownName" autocomplete="off" placeholder="z. B. Proteinriegel"></label>
+            <label>kcal<input id="ownK" inputmode="numeric" autocomplete="off"></label>
+            <label>Eiweiß g<input id="ownP" inputmode="decimal" autocomplete="off"></label>
+            <label>Einheit<input id="ownUnit" autocomplete="off" placeholder="Stück"></label>
+            <label>Gramm<input id="ownG" inputmode="numeric" autocomplete="off"></label>
+          </div>
+          <div class="actions"><button type="button" class="btn ghost" id="ownAdd">Speichern</button></div>
+        </div>
+      </details>
+    </div>
+
+    <details class="manual cardf" id="manual">
+      <summary>Eigenes eintragen</summary>
+      <div class="mgrid">
+        <label>Was<input id="mName" autocomplete="off" placeholder="z. B. Skyr 250 g"></label>
+        <label>kcal<input id="mK" inputmode="numeric" autocomplete="off"></label>
+        <label>Eiweiß g<input id="mP" inputmode="numeric" autocomplete="off"></label>
+      </div>
+      <div class="actions"><button type="button" class="btn ghost" id="mAdd">Hinzufügen</button></div>
+    </details>
+
+  </section>
+
+  <section class="view" data-name="wasser" hidden>
+    <div class="card bwcard" id="bwCard" hidden>
+      <div class="ctitle">Körpergewicht <span class="fm">einmal pro Woche</span></div>
+      <div class="wcustom"><label class="sr" for="bwIn">Körpergewicht in kg</label><input id="bwIn" inputmode="decimal" placeholder="kg" autocomplete="off"><button type="button" class="btn primary" id="bwSave">Eintragen</button></div>
+      <p class="fstatus" id="bwHint"></p>
+    </div>
+    <h2 class="h2">Wasser</h2>
+    <div class="water">
+      <svg viewBox="0 0 120 220" aria-hidden="true" focusable="false">
+        <defs><clipPath id="bottleClip"><path d="M48 8h24v22c0 6 6 10 12 16c8 8 12 16 12 28v120c0 12-8 20-20 20h-32c-12 0-20-8-20-20v-120c0-12 4-20 12-28c6-6 12-10 12-16z"/></clipPath></defs>
+        <path class="bottle-bg" d="M48 8h24v22c0 6 6 10 12 16c8 8 12 16 12 28v120c0 12-8 20-20 20h-32c-12 0-20-8-20-20v-120c0-12 4-20 12-28c6-6 12-10 12-16z"/>
+        <g clip-path="url(#bottleClip)"><rect id="wFill" x="0" y="30" width="120" height="186" style="transform:translateY(186px)"/></g>
+        <path class="bottle-out" d="M48 8h24v22c0 6 6 10 12 16c8 8 12 16 12 28v120c0 12-8 20-20 20h-32c-12 0-20-8-20-20v-120c0-12 4-20 12-28c6-6 12-10 12-16z"/>
+        <rect class="bottle-cap" x="45" y="0" width="30" height="11" rx="3"/>
+      </svg>
+      <div class="wstat"><b id="wNow">0,0 l</b><span class="of" id="wGoal"></span><p class="left" id="wLeft"></p></div>
+    </div>
+    <div class="wbtns">
+      <button type="button" data-ml="250">+250 ml<small>Glas</small></button>
+      <button type="button" data-ml="500">+500 ml<small>Flasche</small></button>
+      <button type="button" data-ml="1000">+1 l<small>Große Flasche</small></button>
+    </div>
+    <div class="wrow">
+      <details class="wmore"><summary>Andere Menge</summary>
+        <div class="wcustom"><label class="sr" for="wCustom">Eigene Menge in ml</label><input id="wCustom" inputmode="numeric" placeholder="ml" autocomplete="off"><button type="button" class="btn ghost" id="wAddC">Hinzufügen</button></div>
+      </details>
+      <button type="button" class="linkbtn" id="wUndo">Rückgängig</button>
+    </div>
+    <h3 class="h3">Schlaf</h3>
+    <div class="seg small slseg" role="group" aria-label="Welche Nacht" id="slSeg">
+      <button type="button" data-n="last" aria-pressed="false"></button>
+      <button type="button" data-n="next" aria-pressed="false"></button>
+    </div>
+    <div class="sleep">
+      <label class="slf"><span>Eingeschlafen</span><input type="time" id="slFrom"></label>
+      <label class="slf"><span>Aufgewacht</span><input type="time" id="slTo"></label>
+      <div class="sleep-r"><span class="sleep-d" id="slDur"></span><button type="button" class="btn ghost" id="slSave">Speichern</button></div>
+    </div>
+  </section>
+</main>
+
+<div class="timer" id="timer" hidden role="timer" aria-live="off">
+  <div class="timer-in">
+    <div><span class="t" id="tTime">0:00</span><span class="n" id="tName"></span></div>
+    <div class="tb">
+      <button type="button" id="tPlus">+30 s</button>
+      <button type="button" id="tStop">Fertig</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden role="status" aria-live="polite"></div>
+<p class="sr" id="live" aria-live="polite"></p>
+
+<script type="module" src="/js/app.js"></script>
+</body>
+</html>
