@@ -7,12 +7,12 @@ import {
 
 // Diese Werte sind bei Firebase-Web-Apps öffentlich. Der Schutz der Daten liegt in firestore.rules.
 const firebaseConfig = {
-  apiKey: 'AIzaSyDjBTi4zq3aMLI1-LDmN6prs6SA0vyc4HE',
-  authDomain: 'body-tracking-7febc.firebaseapp.com',
-  projectId: 'body-tracking-7febc',
-  storageBucket: 'body-tracking-7febc.firebasestorage.app',
-  messagingSenderId: '511266858898',
-  appId: '1:511266858898:web:4e07016e6888ef772ac34b'
+  apiKey: 'AIzaSyDpGAhc8O6gB84dMDR1b3NjEcaLz3LrFts',
+  authDomain: 'fittness-app-68e99.firebaseapp.com',
+  projectId: 'fittness-app-68e99',
+  storageBucket: 'fittness-app-68e99.firebasestorage.app',
+  messagingSenderId: '545223523130',
+  appId: '1:545223523130:web:3e52d5d7053f32012fee03'
 };
 
 const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
