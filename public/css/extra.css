@@ -57,3 +57,6 @@ select,.pfield input,.pnew input{font:inherit;color:var(--ink);background:var(--
 .board .brank{color:var(--muted)}
 .board .bname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .board .k{font-family:var(--cond);font-weight:600;font-size:18px;white-space:nowrap}
+
+.invite-result[hidden]{display:none}
+.invite-result input{flex:1 1 220px;width:auto;min-width:0;font-size:14px;text-align:left;padding:0 10px}

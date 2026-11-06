@@ -1,3 +1,4 @@
+import { FieldValue } from 'firebase-admin/firestore';
 import { adminAuth, adminDb, requireMember, send } from './_lib/firebase-admin.js';
 
 const MAX_AUTH_AGE_SECONDS = 300;
@@ -18,6 +19,9 @@ export default async function handler(req, res) {
     const entries = await db.collection('leaderboard').where('uid', '==', user.uid).get();
     const batch = db.batch();
     entries.docs.forEach(d => batch.delete(d.ref));
+    // Offene Codes verfallen, bei benutzten wird der Bezug zum gelöschten Konto entfernt.
+    const invites = await db.collection('invites').where('createdBy', '==', user.uid).get();
+    invites.docs.forEach(d => (d.data().usedBy ? batch.update(d.ref, { createdBy: FieldValue.delete() }) : batch.delete(d.ref)));
     await batch.commit();
     await db.recursiveDelete(db.collection('users').doc(user.uid));
     await adminAuth().deleteUser(user.uid);

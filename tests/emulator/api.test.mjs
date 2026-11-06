@@ -6,8 +6,9 @@ process.env.GCLOUD_PROJECT = 'demo-body-tracking';
 assert.ok(process.env.FIRESTORE_EMULATOR_HOST, 'Emulator fehlt');
 
 const { adminAuth, adminDb, berlinDateId } = await import('../../api/_lib/firebase-admin.js');
-const { generateCode, hashCode } = await import('../../api/_lib/invites.js');
+const { INVITE_LIMIT, generateCode, hashCode } = await import('../../api/_lib/invites.js');
 const register = (await import('../../api/register.js')).default;
+const inviteApi = (await import('../../api/invite.js')).default;
 const sync = (await import('../../api/leaderboard-sync.js')).default;
 const account = (await import('../../api/account.js')).default;
 const product = (await import('../../api/product.js')).default;
@@ -130,6 +131,59 @@ test('Konto löschen entfernt Daten, Rangliste und Anmeldung', async () => {
   await assert.rejects(adminAuth().getUser(m.uid));
 });
 
+test('Mitglied lädt ein, der Code funktioniert einmal, in der Datenbank liegt nur der Hash', async () => {
+  const m = await member();
+  const r = await call(inviteApi, { token: m.token });
+  assert.equal(r.status, 201);
+  assert.equal(r.data.remaining, INVITE_LIMIT - 1);
+  const doc = await adminDb().collection('invites').doc(hashCode(r.data.code)).get();
+  assert.equal(doc.data().createdBy, m.uid);
+  assert.equal(JSON.stringify(doc.data()).includes(r.data.code), false);
+
+  const gast = newUser();
+  assert.equal((await call(register, { body: { ...gast, inviteCode: r.data.code } })).status, 201);
+  assert.equal((await call(register, { body: { ...newUser(), inviteCode: r.data.code } })).status, 403);
+  const eingeladen = await signIn(gast.email, gast.password);
+  assert.equal((await call(inviteApi, { method: 'GET', token: eingeladen.token })).data.remaining, INVITE_LIMIT, 'Eingeladene können selbst einladen');
+});
+
+test('Einladungen brauchen eine Mitgliedschaft', async () => {
+  assert.equal((await call(inviteApi)).status, 401);
+  const email = `ohne-einladung${Date.now()}@example.com`;
+  await adminAuth().createUser({ email, password: 'geheim1234' });
+  const { token } = await signIn(email, 'geheim1234');
+  assert.equal((await call(inviteApi, { token })).status, 401);
+});
+
+test('Das Limit gilt pro Konto und hält gleichzeitigen Anfragen stand', async () => {
+  const m = await member(), andere = await member();
+  const results = await Promise.all(Array.from({ length: INVITE_LIMIT + 5 }, () => call(inviteApi, { token: m.token })));
+  const count = (await adminDb().collection('invites').where('createdBy', '==', m.uid).get()).size;
+  assert.ok(count <= INVITE_LIMIT, `${count} Codes erstellt`);
+  assert.equal(results.filter(r => r.status === 201).length, count);
+
+  for (let i = count; i < INVITE_LIMIT; i++) assert.equal((await call(inviteApi, { token: m.token })).status, 201);
+  const voll = await call(inviteApi, { token: m.token });
+  assert.equal(voll.status, 403);
+  assert.equal(voll.data.remaining, 0);
+  assert.equal((await call(inviteApi, { method: 'GET', token: m.token })).data.remaining, 0);
+  assert.equal((await call(inviteApi, { token: andere.token })).status, 201, 'Andere Konten sind nicht betroffen');
+});
+
+test('Konto löschen entfernt offene Codes und den Bezug bei benutzten', async () => {
+  const m = await member(), invites = adminDb().collection('invites');
+  const offen = (await call(inviteApi, { token: m.token })).data.code;
+  const benutzt = (await call(inviteApi, { token: m.token })).data.code;
+  assert.equal((await call(register, { body: { ...newUser(), inviteCode: benutzt } })).status, 201);
+
+  assert.equal((await call(account, { method: 'DELETE', token: m.token })).status, 200);
+  assert.equal((await invites.doc(hashCode(offen)).get()).exists, false);
+  const rest = await invites.doc(hashCode(benutzt)).get();
+  assert.equal(rest.exists, true);
+  assert.equal(rest.data().createdBy, undefined);
+  assert.equal((await call(register, { body: { ...newUser(), inviteCode: offen } })).status, 403);
+});
+
 test('Barcode wird geprüft, bevor etwas nach außen geht', async () => {
   const m = await member();
   assert.equal((await call(product, { method: 'GET', token: m.token, query: { ean: 'abc' } })).status, 400);
@@ -142,4 +196,5 @@ test('Falsche HTTP-Methoden werden abgelehnt', async () => {
   assert.equal((await call(sync, { method: 'GET' })).status, 405);
   assert.equal((await call(account, { method: 'POST' })).status, 405);
   assert.equal((await call(product, { method: 'POST' })).status, 405);
+  assert.equal((await call(inviteApi, { method: 'DELETE' })).status, 405);
 });

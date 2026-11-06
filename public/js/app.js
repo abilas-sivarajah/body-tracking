@@ -944,7 +944,55 @@ $("#delBtn").addEventListener("click", function(){
   });
 });
 
+// ---------- Einladungen ----------
+function inviteRequest(method){
+  return authFetch("/api/invite", {method:method}).then(function(r){
+    return r.json().catch(function(){ return {}; }).then(function(d){
+      if (!r.ok) throw Object.assign(new Error(d.error || "Das hat nicht geklappt. Versuch es nochmal."), {status:d});
+      return d;
+    });
+  });
+}
+function showInviteStatus(s){
+  if (!s || typeof s.remaining !== "number") return;
+  $("#inviteMeta").textContent = "Noch " + s.remaining + " von " + s.limit;
+  $("#inviteBtn").disabled = s.remaining <= 0;
+}
+$("#inviteFold").addEventListener("toggle", function(){
+  if (!this.open) return;
+  inviteRequest("GET").then(showInviteStatus).catch(function(){ $("#inviteMeta").textContent = "Gerade nicht verfügbar"; });
+});
+$("#inviteBtn").addEventListener("click", function(){
+  var btn = this; btn.disabled = true;
+  inviteRequest("POST").then(function(d){
+    $("#inviteLink").value = location.origin + "/?invite=" + encodeURIComponent(d.code);
+    $("#inviteResult").hidden = false;
+    btn.disabled = false;
+    showInviteStatus(d);
+    toast("Einladung erstellt");
+  }).catch(function(e){
+    btn.disabled = false;
+    showInviteStatus(e.status);
+    toast(e.message || "Das hat nicht geklappt. Versuch es nochmal.");
+  });
+});
+$("#inviteCopy").addEventListener("click", function(){
+  var field = $("#inviteLink");
+  field.select();
+  var copied = navigator.clipboard ? navigator.clipboard.writeText(field.value) : Promise.reject();
+  copied.then(function(){ toast("Link kopiert"); }).catch(function(){ toast("Bitte den markierten Link selbst kopieren."); });
+});
+
 // ---------- Anmeldung ----------
+// Der Code aus dem Einladungslink soll nicht in Verlauf oder Adresszeile bleiben.
+var linkInvite = (function(){
+  var params = new URLSearchParams(location.search), code = params.get("invite");
+  if (!params.has("invite")) return "";
+  params.delete("invite");
+  var rest = params.toString();
+  history.replaceState(null, "", location.pathname + (rest ? "?" + rest : "") + location.hash);
+  return code && /^[A-Za-z0-9-]{5,40}$/.test(code) ? code : "";
+})();
 function authMsg(t){ $("#authMsg").textContent = t || ""; }
 function setAuthMode(m){
   $("#authView").dataset.mode = m;
@@ -1000,7 +1048,12 @@ function startData(){
 }
 
 onAuthChange(function(user){
-  if (!user){ uid = null; showGate(true); setAuthMode("login"); return; }
+  if (!user){
+    uid = null; showGate(true);
+    setAuthMode(linkInvite ? "register" : "login");
+    if (linkInvite){ $("#authCode").value = linkInvite; linkInvite = ""; }
+    return;
+  }
   hasMemberClaim(user).then(function(ok){
     if (!ok){ showGate(true); setAuthMode("login"); authMsg("Dieses Konto hat keinen Zugang. Du brauchst eine Einladung."); logout(); return; }
     if (uid === user.uid) return;

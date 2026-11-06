@@ -1,5 +1,8 @@
 import { createHash, randomBytes } from 'node:crypto';
 
+// So viele Einladungen darf ein Konto insgesamt erstellen.
+export const INVITE_LIMIT = 10;
+
 // In der Datenbank liegt nur der Hash, ein Datenbank-Auszug verrät keine gültigen Codes.
 export const hashCode = code => createHash('sha256').update(String(code).trim().toUpperCase()).digest('hex');
 
